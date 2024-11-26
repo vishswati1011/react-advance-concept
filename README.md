@@ -2,14 +2,18 @@
 
 1. create a file authContext.js
 
-import { createContext, useCallback, useState, useEffect, useMemo } from "react";
+###
+    import { createContext, useCallback, useState, useEffect, useMemo } from "react";
 
-const initialState = {
-  isAuthenticate: false,
-  setToken: () => {},
-};
+    const initialState = {
+      isAuthenticate: false,
+      setToken: () => {},
+    };
 
-const AuthContext = createContext(initialState);
+    const AuthContext = createContext(initialState);
+
+
+### 
 
 const AuthProvider = ({ children }) => {
   const [isAuthenticate, setIsAuthenticate] = useState('');
@@ -39,7 +43,7 @@ const AuthProvider = ({ children }) => {
 export { AuthContext, AuthProvider };
 
 
-2. import authcontext in app.js
+#  2. import authcontext in app.js
 
 
 import { BrowserRouter as Router} from 'react-router-dom';
@@ -61,7 +65,7 @@ function App() {
 export default App;
 
 
-3. import AuthContent in Login to access setToken method
+# 3. import AuthContent in Login to access setToken method
 
   const { setToken } = useContext(AuthContext);
 
@@ -70,7 +74,7 @@ export default App;
   };
 
 
-4. import AuthProvider in index.js
+# 4. import AuthProvider in index.js
 
     root.render(
     <AuthProvider>
