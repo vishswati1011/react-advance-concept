@@ -3,48 +3,47 @@
 1. create a file authContext.js
 
 ###
-    import { createContext, useCallback, useState, useEffect, useMemo } from "react";
+  import { createContext, useCallback, useState, useEffect, useMemo } from "react";
 
-    const initialState = {
-      isAuthenticate: false,
-      setToken: () => {},
-    };
+  const initialState = {
+    isAuthenticate: false,
+    setToken: () => {},
+  };
 
-    const AuthContext = createContext(initialState);
+  const AuthContext = createContext(initialState);
 
+  const AuthProvider = ({ children }) => {
+    const [isAuthenticate, setIsAuthenticate] = useState('');
 
-### 
-
-const AuthProvider = ({ children }) => {
-  const [isAuthenticate, setIsAuthenticate] = useState('');
-
-  const setToken = useCallback((token) => {
-    localStorage.setItem("token", token);
-    setIsAuthenticate(true);
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token === 'logged-in') {
+    const setToken = useCallback((token) => {
+      localStorage.setItem("token", token);
       setIsAuthenticate(true);
-    }
-  }, [isAuthenticate]);
+    }, []);
 
-  const value = useMemo(()=>({isAuthenticate,setToken}),[isAuthenticate,setToken])
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+      if (token === 'logged-in') {
+        setIsAuthenticate(true);
+      }
+    }, [isAuthenticate]);
+
+    const value = useMemo(()=>({isAuthenticate,setToken}),[isAuthenticate,setToken])
 
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+    return (
+      <AuthContext.Provider value={value}>
+        {children}
+      </AuthContext.Provider>
+    );
+  };
 
-export { AuthContext, AuthProvider };
+  export { AuthContext, AuthProvider };
 
+###
 
 #  2. import authcontext in app.js
 
+###
 
 import { BrowserRouter as Router} from 'react-router-dom';
 import AuthRoutes from './Routes/AuthRoutes.js';
@@ -64,17 +63,22 @@ function App() {
 
 export default App;
 
+### 
 
 # 3. import AuthContent in Login to access setToken method
 
+###
   const { setToken } = useContext(AuthContext);
 
   const handleClick = () => {
     setToken("logged-in");
   };
 
+###
 
 # 4. import AuthProvider in index.js
+
+###
 
     root.render(
     <AuthProvider>
@@ -82,11 +86,14 @@ export default App;
     </AuthProvider>
     );
 
+###
 
 
 # create a HOC component for loading 
 
 ## HOC/withLoading.js
+
+###
 
 import React, { useEffect, useState } from "react";
 export const WithLoading = (WrappedComponent) => {
@@ -108,8 +115,10 @@ export const WithLoading = (WrappedComponent) => {
   return WithLoading;
 };
 
+### 
 ## use HOC
 
+###
 import React from 'react'
 import Navbar from '../components/Navbar'
 import { withLoading } from '../HOC/withLoading'
@@ -126,9 +135,13 @@ const Home = ({isLoading}) => {
 
 export default withLoading(Home)
 
+###
+
 # Create a Tooltip use React Portal
 
 ## 1. First we create a tooltip modal
+
+###
 
 import React, { useRef, useState } from 'react';
 
@@ -158,9 +171,12 @@ function Tooltip({ children ,content}) {
 
 export default Tooltip;
 
+###
 
-## tooltip css
-Tooltip.css
+## tooltip css  file name Tooltip.css
+
+###
+
 .tooltip {
     position: absolute;
     max-width:350px;
@@ -174,8 +190,44 @@ Tooltip.css
     padding: 5px;
 }
 
+###
+
 ## now we use Tooltip model
 
+
+###
+import React,{useRef} from 'react';
+import Tooltip from '../model/tooltip';
+import styles from './Navbar.module.css'
+
+function Navbar() {
+    const menuRef = useRef(null);
+    const toggleMenu = (event) =>{
+        var menu = document.querySelector(`.${styles.nav_list}`)
+        if(menu){
+            menu.classList.toggle(`${styles.active}`)
+        }
+    }
+  return (
+    <nav className={styles.header}>
+      <h1>Navbar</h1>
+      <div className={styles.menu}>
+        <span onClick={(e)=>toggleMenu(e)} ref={menuRef}> Menu</span>
+        <ul className={styles.nav_list}>
+          <li> About Us</li>
+          <li>Content</li>
+            <Tooltip content="les't do it...">
+              <li>Login</li>
+            </Tooltip>
+        </ul>
+      </div>
+    </nav>
+  );
+}
+
+export default Navbar;
+
+###
 
 
 
