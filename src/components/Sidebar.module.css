@@ -1,0 +1,20 @@
+.sidebar {
+    display: block;
+    max-width: 300px;
+    height: 90vh;
+    background-color: black;
+    color: white;
+}
+.menu{
+    margin-inline-end: 10px;
+}
+.menu li {
+    list-style: none;
+    padding: 10px;
+
+}
+.menu li:hover{
+    background-color: lightgrey;
+    color: black;
+    margin-left: 10px;
+}

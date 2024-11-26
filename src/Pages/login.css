@@ -1,0 +1,14 @@
+.login_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 200px; /* Adjust height as needed 1  */
+    width: 300px;
+    margin: auto;
+  }
+
+  .login_container input,
+  .login_container button {
+    padding: 10px;
+    margin: 10px 0px; /* Adjust margin as needed */
+  }

@@ -1,70 +1,179 @@
-# Getting Started with Create React App
+## Step to Create a AuthContext
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1. create a file authContext.js
 
-## Available Scripts
+import { createContext, useCallback, useState, useEffect, useMemo } from "react";
 
-In the project directory, you can run:
+const initialState = {
+  isAuthenticate: false,
+  setToken: () => {},
+};
 
-### `npm start`
+const AuthContext = createContext(initialState);
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+const AuthProvider = ({ children }) => {
+  const [isAuthenticate, setIsAuthenticate] = useState('');
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+  const setToken = useCallback((token) => {
+    localStorage.setItem("token", token);
+    setIsAuthenticate(true);
+  }, []);
 
-### `npm test`
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token === 'logged-in') {
+      setIsAuthenticate(true);
+    }
+  }, [isAuthenticate]);
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+  const value = useMemo(()=>({isAuthenticate,setToken}),[isAuthenticate,setToken])
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+export { AuthContext, AuthProvider };
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+2. import authcontext in app.js
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+import { BrowserRouter as Router} from 'react-router-dom';
+import AuthRoutes from './Routes/AuthRoutes.js';
+import UnAuthRoutes from './Routes/UnAuthRoutes.js';
+import { AuthContext} from './context/authContext.js';
+import { useContext } from 'react';
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+function App() {
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+  const {isAuthenticate} = useContext(AuthContext)
+  return (
+    <Router>
+        {isAuthenticate ? <AuthRoutes/>:<UnAuthRoutes/>}
+    </Router>
+  );
+}
 
-## Learn More
+export default App;
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. import AuthContent in Login to access setToken method
 
-### Code Splitting
+  const { setToken } = useContext(AuthContext);
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+  const handleClick = () => {
+    setToken("logged-in");
+  };
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+4. import AuthProvider in index.js
 
-### Making a Progressive Web App
+    root.render(
+    <AuthProvider>
+        <App />
+    </AuthProvider>
+    );
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+# create a HOC component for loading 
 
-### Deployment
+## HOC/withLoading.js
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+import React, { useEffect, useState } from "react";
+export const WithLoading = (WrappedComponent) => {
+  const WithLoading = ({ props }) => {
 
-### `npm run build` fails to minify
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    }, []);
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    return <WrappedComponent isLoading={isLoading} {...props} />;
+  };
+  WithLoading.displayName = `withLoading(${
+    WrappedComponent.displayName || WrappedComponent.name
+  })`;
+
+  return WithLoading;
+};
+
+## use HOC
+
+import React from 'react'
+import Navbar from '../components/Navbar'
+import { withLoading } from '../HOC/withLoading'
+const Home = ({isLoading}) => {
+  return (
+    <div>
+      <Navbar />
+           {isLoading ? <h3>Loading ....</h3>:
+           <p> Home Component </p>
+           }
+    </div>
+  )
+}
+
+export default withLoading(Home)
+
+# Create a Tooltip use React Portal
+
+## 1. First we create a tooltip modal
+
+import React, { useRef, useState } from 'react';
+
+function Tooltip({ children ,content}) {
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const tooltipRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    setIsTooltipVisible(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsTooltipVisible(false);
+  };
+
+  return (
+    <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}> 
+      {children}
+      {isTooltipVisible && (
+        <div ref={tooltipRef} className="tooltip">
+          <button className='tooltip_button'>{content}</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Tooltip;
+
+
+## tooltip css
+Tooltip.css
+.tooltip {
+    position: absolute;
+    max-width:350px;
+    z-index: 1000; /* Ensure tooltip is above the li element */
+}
+.tooltip_button {
+    background-color: rgb(9, 152, 165);
+    color:white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+## now we use Tooltip model
+
+
+
+
+
+
