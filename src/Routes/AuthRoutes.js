@@ -18,7 +18,6 @@ const AuthRoutes = () => {
     </Routes>
       </div>
       </div>
-     
     </div>
     
   )

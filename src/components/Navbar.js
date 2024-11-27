@@ -1,8 +1,10 @@
 import React,{useEffect, useRef} from 'react';
 import Tooltip from '../model/tooltip';
 import styles from './Navbar.module.css'
+import { useDarkMode } from '../customHook/useDarkMode';
 
 function Navbar() {
+    const {isDarkMode,toggleDarkMode}= useDarkMode();
     const menuRef = useRef(null);
     const toggleMenu = (event) => {
       const menu = menuRef.current; // Get the DOM element reference
@@ -25,7 +27,7 @@ function Navbar() {
     },[])
     
     return (
-      <nav className={styles.header}>
+      <nav className={`${styles.header} ${isDarkMode ? styles.darkHeader : styles.lightHeader}`}>
         <h1>Navbar</h1>
         <div className={styles.menu}>
           <span onClick={(e)=>toggleMenu(e)} > Menu</span>
@@ -35,6 +37,7 @@ function Navbar() {
               <Tooltip content="les't do it...">
                 <li>Login</li>
               </Tooltip>
+              <li><button onClick={()=>toggleDarkMode()}>{isDarkMode?'Use Light-mode' : 'Use Dark-mode'}</button></li>
           </ul>
         </div>
       </nav>

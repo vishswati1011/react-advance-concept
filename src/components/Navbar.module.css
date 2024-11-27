@@ -2,12 +2,15 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    background-color: black; 
-     color: white; 
 }
-/* .header h1 {
-    margin-left: 20px
-} */
+.darkHeader {
+    background-color: rgb(1, 113, 119); 
+    color: white; 
+}
+.lightHeader {
+    background-color: antiquewhite;
+    color: black;
+}
 .nav_list {
     display: flex;
     align-items: 'center';

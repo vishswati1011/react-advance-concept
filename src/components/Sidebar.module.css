@@ -2,16 +2,32 @@
     display: block;
     max-width: 300px;
     height: 90vh;
-    background-color: black;
-    color: white;
+}
+.darkMode {
+    background-color: rgb(1, 113, 119); 
+    color: white; 
+}
+.lightMode {
+    background-color: antiquewhite;
+    color: black;
 }
 .menu{
     margin-inline-end: 10px;
+    padding-inline-start: 20px;
+    margin-block-start: 0px;
 }
 .menu li {
     list-style: none;
     padding: 10px;
-
+}
+.link_style {
+    text-decoration: none;
+}
+.darkText {
+    color: black;
+}
+.lightText {
+    color: white;
 }
 .menu li:hover{
     background-color: lightgrey;
